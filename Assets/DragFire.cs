@@ -16,12 +16,16 @@ public class DragFire : MonoBehaviour
     public int bounceCount;
     public Text count;
     public float timer;
+    Vector3 mouseScreenPosition;
+    public Transform arrow;
+    public GameObject arrowPrent;
     void Start()
     {   
         trajector = GetComponent<TrajectorLine>();
         cam = Camera.main;
         bounceCount = int.Parse(count.text);
         Debug.Log(bounceCount);
+        arrowPrent.SetActive(false);
     }
 
     // Update is called once per frame
@@ -31,6 +35,8 @@ public class DragFire : MonoBehaviour
         if(bounceCount < 5){
             StartCoroutine(CdTimer());
         }
+         RotateArrow();
+      
     }
     private IEnumerator CdTimer(){
         yield return new WaitForSeconds(5);
@@ -42,19 +48,35 @@ public class DragFire : MonoBehaviour
        count.text = bounceCount.ToString();
        Debug.Log("bounccound " + bounceCount);
     }
+    public void RotateArrow(){
+        mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 lookAt = mouseScreenPosition;
+
+        float AngleRad = Mathf.Atan2(lookAt.y - arrow.transform.position.y, lookAt.x - arrow.transform.position.x);
+
+        float AngleDeg = (180 / Mathf.PI) * AngleRad;
+        arrow.rotation = Quaternion.Euler(0, 0, AngleDeg);
+
+    }
     void Fire(){
+
          if(bounceCount >= 0)  {    
             if(Input.GetMouseButtonDown(0)){
                 Debug.Log("press left button");
                 startPoint = cam.ScreenToWorldPoint(Input.mousePosition);
+                
                 startPoint.z = 15;
                 bounceCount--;
                 count.text = bounceCount.ToString();
                 Debug.Log(startPoint);
+                arrowPrent.SetActive(true);
             }
 
             if(Input.GetMouseButton(0)){
                 Vector3 currentPoint = cam.ScreenToWorldPoint(Input.mousePosition);
+
+                // float dirAngle = Vector3.Angle(startPoint, currentPoint);
+                // arrowPrent.transform.Rotate( 0, 0,dirAngle);
                 currentPoint.z = 15;
                 trajector.RenderLine(startPoint, currentPoint);
             }
@@ -67,6 +89,7 @@ public class DragFire : MonoBehaviour
                 rb.AddForce(force * power, ForceMode2D.Impulse);
 
                 trajector.EndLine();
+                arrowPrent.SetActive(false);
             }    
         }
     }
