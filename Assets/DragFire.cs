@@ -35,7 +35,7 @@ public class DragFire : MonoBehaviour
         if(bounceCount < 5){
             StartCoroutine(CdTimer());
         }
-         RotateArrow();
+        //  RotateArrow();
       
     }
     private IEnumerator CdTimer(){
@@ -79,6 +79,10 @@ public class DragFire : MonoBehaviour
                 // arrowPrent.transform.Rotate( 0, 0,dirAngle);
                 currentPoint.z = 15;
                 trajector.RenderLine(startPoint, currentPoint);
+                float AngleRad = Mathf.Atan2(currentPoint.y - startPoint.y, currentPoint.x - startPoint.x);
+
+                float AngleDeg = (180 / Mathf.PI) * AngleRad;
+                arrow.rotation = Quaternion.Euler(0, 0, AngleDeg);
             }
 
             if(Input.GetMouseButtonUp(0)){
